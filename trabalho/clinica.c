@@ -269,53 +269,6 @@ void carregar_pacientes(ListaDupla* lista_m, NoAVL** raiz_l, char* nome_arquivo)
     fclose(arquivo);
 }
 
-// Função para cadastrar um novo paciente
-void cadastrar_paciente(ListaDupla* lista_m, NoAVL** raiz_l) {
-    Paciente paciente;
-
-    printf("\n--- Cadastrar Novo Paciente ---\n");
-    printf("Nome: ");
-    scanf(" %[^\n]", paciente.nome);
-    setbuf(stdin, NULL);
-
-    // Verifica se o paciente já existe
-    if (buscar_lista(lista_m, paciente.nome)) {
-        printf("Erro: Já existe um paciente com esse nome na lista de Moisés.\n");
-        return;
-    }
-    if (buscar_avl(*raiz_l, paciente.nome)) {
-        printf("Erro: Já existe um paciente com esse nome na lista de Liz.\n");
-        return;
-    }
-
-    printf("Sexo (M/F): ");
-    scanf(" %c", &paciente.sexo);
-    setbuf(stdin, NULL);
-
-    // Valida o sexo
-    if (paciente.sexo != 'M' && paciente.sexo != 'F') {
-        printf("Erro: Sexo inválido. Use 'M' para masculino ou 'F' para feminino.\n");
-        return;
-    }
-    
-
-    printf("Data de Nascimento (dd/mm/aaaa): ");
-    scanf("%s", paciente.nascimento);
-    setbuf(stdin, NULL);
-
-    printf("Data da Última Consulta (dd/mm/aaaa): ");
-    scanf("%s", paciente.ultima_consulta);
-    setbuf(stdin, NULL);
-    
-    // Insere o paciente na estrutura correta
-    if (paciente.sexo == 'M') {
-        inserir_ordenado(lista_m, paciente);
-        printf("Paciente cadastrado na lista de Moisés.\n");
-    } else {
-        *raiz_l = inserir_avl(*raiz_l, paciente);
-        printf("Paciente cadastrado na lista de Liz.\n");
-    }
-}
 
 // Função para exibir o menu de pacientes do Moisés
 void menu_moises(ListaDupla* lista) {
@@ -343,7 +296,7 @@ void menu_moises(ListaDupla* lista) {
                 listar_pacientes_lista(lista);
                 break;
             case 3:
-                cadastrar_paciente(lista, NULL);
+                printf("nao implementado");
                 break;
             case 4:
                 printf("Alterar cadastro (não implementado).\n");
@@ -384,7 +337,7 @@ void menu_liz(NoAVL* raiz) {
                 listar_pacientes_avl(raiz);
                 break;
             case 3:
-                cadastrar_paciente(NULL, &raiz);
+                printf("cadastrar paciente(não implementado).\n");
                 break;
             case 4:
                 printf("Alterar cadastro (não implementado).\n");
