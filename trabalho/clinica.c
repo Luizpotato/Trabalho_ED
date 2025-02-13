@@ -237,14 +237,14 @@ void listar_pacientes_avl(NoAVL* raiz) {
 void limpar_string(char* str) {
     int i, j = 0;
     for (i = 0; str[i] != '\0'; i++) {
-        if (str[i] != '"' && str[i] != '<' && str[i] != '>') {
+        if (str[i] != '<' && str[i] != '>') {
             str[j++] = str[i];
         }
     }
     str[j] = '\0';
 }
 
-// Função para carregar os pacientes do arquivo CSV
+// Função para carregar os pacientes do arquivo TXT
 void carregar_pacientes(ListaDupla* lista_m, NoAVL** raiz_l, char* nome_arquivo) {
     FILE* arquivo = fopen(nome_arquivo, "r");
     if (arquivo == NULL) {
@@ -268,7 +268,6 @@ void carregar_pacientes(ListaDupla* lista_m, NoAVL** raiz_l, char* nome_arquivo)
 
     fclose(arquivo);
 }
-
 
 // Função para exibir o menu de pacientes do Moisés
 void menu_moises(ListaDupla* lista) {
@@ -382,7 +381,7 @@ void menu_principal(ListaDupla* lista_m, NoAVL* raiz_l) {
 // Função principal
 int main(int argc, char* argv[]) {
     if (argc != 2) {
-        printf("Uso: %s <arquivo.csv>\n", argv[0]);
+        printf("Uso: %s <arquivo.txt>\n", argv[0]);
         return 1;
     }
 
