@@ -348,7 +348,8 @@ void cadastrar_paciente(ListaDupla* lista_m, NoAVL** raiz_l) {
 }
 
 // Função para alterar um registro de paciente
-void alterar_registro(ListaDupla* lista_m, NoAVL* raiz_l){
+// Função para alterar um registro de paciente
+void alterar_registro(ListaDupla* lista_m, NoAVL* raiz_l) {
     char nome[100];
     int menu;
 
@@ -365,68 +366,61 @@ void alterar_registro(ListaDupla* lista_m, NoAVL* raiz_l){
         if (paciente != NULL) {
             printf("Paciente encontrado na arvore da Liz.\n");
         } else {
-            printf("Paciente nzo encontrado.\n");
+            printf("Paciente não encontrado.\n");
             return;
         }
     }
 
-    setbuf(stdin, NULL);
-    getchar();
-
-    printf("O que deseja alterar?\n");
-    printf("1. Nome\n");
-    printf("2. Sexo\n");
-    printf("3. Data de Nascimento\n");
-    printf("4. Data da Última Consulta\n");
-    printf("Sua escolha: ");
-    scanf("%d", &menu);
-
-    switch(menu){
-        case 1:
-            printf("Digite o novo nome: ");
-            char novo_nome[100];
-            scanf(" %[^\n]", novo_nome);
-            strcpy(paciente->nome, novo_nome);
-
-            setbuf(stdin, NULL);
-            printf("Registro do paciente alterado com sucesso.\n");
-        break;
-        case 2:
-            printf("Digite o novo sexo (M/F): ");
-            char novo_sexo;
-            scanf(" %c", &novo_sexo);
-            if (novo_sexo == 'M' || novo_sexo == 'F') {
-                paciente->sexo = novo_sexo;
-            }
-
-            setbuf(stdin, NULL);
-            printf("Registro do paciente alterado com sucesso.\n");
-        break;
-        case 3:
-            printf("Digite a nova data de nascimento (dd/mm/aaaa):");
-            char nova_nascimento[11];
-            scanf(" %s", nova_nascimento);
-            strcpy(paciente->nascimento, nova_nascimento);
-
-            setbuf(stdin, NULL);
-            printf("Registro do paciente alterado com sucesso.\n");
-        break;
-        case 4:
-            printf("Digite a nova data da última consulta (dd/mm/aaaa):");
-            char nova_consulta[11];
-            scanf(" %s", nova_consulta);
-            strcpy(paciente->ultima_consulta, nova_consulta);
-
-            setbuf(stdin, NULL);
-            printf("Registro do paciente alterado com sucesso.\n");
-        break;
-        case 5:
-            printf("Voltando ao menu principal.\n");
-            limpar_tela();
-        break;
-        default:
-            printf("Opção inválida.\n");
-    } while(menu != 5);
+    do {
+        printf("\nO que deseja alterar?\n");
+        printf("1. Nome\n");
+        printf("2. Sexo\n");
+        printf("3. Data de Nascimento\n");
+        printf("4. Data da Última Consulta\n");
+        printf("5. Voltar\n");
+        printf("Sua escolha: ");
+        scanf("%d", &menu);
+        setbuf(stdin, NULL);
+        switch(menu) {
+            case 1:
+                printf("Digite o novo nome: ");
+                char novo_nome[100];
+                scanf(" %[^\n]", novo_nome);
+                strcpy(paciente->nome, novo_nome);
+                printf("Registro do paciente alterado com sucesso.\n");
+                break;
+            case 2:
+                printf("Digite o novo sexo (M/F): ");
+                char novo_sexo;
+                scanf(" %c", &novo_sexo);
+                if (novo_sexo == 'M' || novo_sexo == 'F') {
+                    paciente->sexo = novo_sexo;
+                    printf("Registro do paciente alterado com sucesso.\n");
+                } else {
+                    printf("Sexo inválido. Use 'M' para masculino ou 'F' para feminino.\n");
+                }
+                break;
+            case 3:
+                printf("Digite a nova data de nascimento (dd/mm/aaaa): ");
+                char nova_nascimento[11];
+                scanf(" %s", nova_nascimento);
+                strcpy(paciente->nascimento, nova_nascimento);
+                printf("Registro do paciente alterado com sucesso.\n");
+                break;
+            case 4:
+                printf("Digite a nova data da última consulta (dd/mm/aaaa): ");
+                char nova_consulta[11];
+                scanf(" %s", nova_consulta);
+                strcpy(paciente->ultima_consulta, nova_consulta);
+                printf("Registro do paciente alterado com sucesso.\n");
+                break;
+            case 5:
+                printf("Voltando ao menu principal.\n");
+                break;
+            default:
+                printf("Opção inválida.\n");
+        }
+    } while (menu != 5);
 }
 
 // Função para salvar os pacientes da lista do Moisés em um arquivo
