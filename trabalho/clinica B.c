@@ -55,6 +55,8 @@ void salvar_pacientes_moises(ListaDupla* lista, const char* nome_arquivo);
 void salvar_pacientes_liz(NoAVL* raiz, FILE* arquivo);
 void salvar_pacientes_liz_arquivo(NoAVL* raiz, const char* nome_arquivo);
 void salvar_pacientes(ListaDupla* lista_m, NoAVL* raiz_l);
+void salvar_pacientes_original(ListaDupla* lista_m, NoAVL* raiz_l, char* nome_arquivo);
+void salvar_avl_em_arquivo(NoAVL* raiz, FILE* arquivo);
 void menu_moises(ListaDupla* lista);
 void menu_liz(NoAVL* raiz);
 void menu_principal(ListaDupla* lista_m, NoAVL* raiz_l);
@@ -76,6 +78,8 @@ int main(int argc, char* argv[]) {
     menu_principal(lista_m, raiz_l);
 
     salvar_pacientes(lista_m, raiz_l);
+
+    salvar_pacientes_original(lista_m, raiz_l, "pacientes.txt");
     
     // Liberar memória (a ser implementado)
     return 0;
@@ -521,6 +525,39 @@ void salvar_pacientes_liz_arquivo(NoAVL* raiz, const char* nome_arquivo) {
 void salvar_pacientes(ListaDupla* lista_m, NoAVL* raiz_l) {
     salvar_pacientes_moises(lista_m, "pacientes_moises.txt");
     salvar_pacientes_liz_arquivo(raiz_l, "pacientes_liz.txt");
+}
+
+void salvar_pacientes_original(ListaDupla* lista_m, NoAVL* raiz_l, char* nome_arquivo){
+    FILE* arquivo = fopen(nome_arquivo, "w");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo para escrita.\n");
+        return;
+    }
+
+    // Salvar pacientes da lista duplamente encadeada (homens)
+    NoLista* atual = lista_m->inicio;
+    while (atual != NULL) {
+        fprintf(arquivo, "%s, %c, %s, %s\n", atual->paciente.nome, atual->paciente.sexo, atual->paciente.nascimento, atual->paciente.ultima_consulta);
+        atual = atual->proximo;
+    }
+
+    // Salvar pacientes da árvore AVL (mulheres)
+    salvar_avl_em_arquivo(raiz_l, arquivo);
+
+    fclose(arquivo);
+    printf("Pacientes salvos com sucesso no arquivo %s.\n", nome_arquivo);
+}
+
+// Função auxiliar para percorrer a árvore AVL e salvar os pacientes no arquivo
+void salvar_avl_em_arquivo(NoAVL* raiz, FILE* arquivo) {
+    if (raiz == NULL) {
+        return;
+    }
+
+    // Percorrer a árvore em ordem (esquerda, raiz, direita)
+    salvar_avl_em_arquivo(raiz->esquerda, arquivo);
+    fprintf(arquivo, "%s, %c, %s, %s\n", raiz->paciente.nome, raiz->paciente.sexo, raiz->paciente.nascimento, raiz->paciente.ultima_consulta);
+    salvar_avl_em_arquivo(raiz->direita, arquivo);
 }
 
 // Função para exibir o menu de pacientes do Moisés
