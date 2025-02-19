@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
 
 // Estrutura para armazenar os dados de um paciente
 typedef struct {
@@ -78,6 +79,47 @@ int main(int argc, char* argv[]) {
     
     // Liberar memória (a ser implementado)
     return 0;
+}
+
+//funcoes
+
+// Função para obter a data atual no formato "dd/mm/aaaa"
+void obter_data_atual(char *data_atual) {
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    sprintf(data_atual, "%02d/%02d/%04d", tm.tm_mday, tm.tm_mon + 1, tm.tm_year + 1900);
+}
+
+// Função para converter uma string de data no formato "dd/mm/aaaa" para struct tm
+int converter_data_string_para_tm(const char *data_str, struct tm *data_tm) {
+    int dia, mes, ano;
+    if (sscanf(data_str, "%d/%d/%d", &dia, &mes, &ano) != 3) {
+        return 0; // Falha na conversão
+    }
+
+    data_tm->tm_mday = dia;
+    data_tm->tm_mon = mes - 1; // tm_mon começa em 0 (janeiro = 0)
+    data_tm->tm_year = ano - 1900; // tm_year é o ano desde 1900
+    return 1; // Sucesso
+}
+
+// Função para calcular a diferença em dias entre duas datas
+int calcular_diferenca_dias(const char *data1, const char *data2) {
+    struct tm tm1 = {0}, tm2 = {0};
+
+    // Converte as strings de data para struct tm
+    if (!converter_data_string_para_tm(data1, &tm1)) return -1;
+    if (!converter_data_string_para_tm(data2, &tm2)) return -1;
+
+    // Converte struct tm para time_t (segundos desde 1 de janeiro de 1970)
+    time_t t1 = mktime(&tm1);
+    time_t t2 = mktime(&tm2);
+
+    // Calcula a diferença em segundos e converte para dias
+    double diferenca_segundos = difftime(t2, t1);
+    int diferenca_dias = (int)round(diferenca_segundos / (60 * 60 * 24));
+
+    return diferenca_dias;
 }
 
 // Função para criar uma nova lista vazia
@@ -244,13 +286,25 @@ Paciente* buscar_avl(NoAVL* raiz, char* nome) {
     }
 }
 
-// Função para exibir os dados de um paciente
 void exibir_paciente(Paciente* paciente) {
     if (paciente != NULL) {
         printf("Nome: %s\n", paciente->nome);
         printf("Sexo: %c\n", paciente->sexo);
         printf("Data de Nascimento: %s\n", paciente->nascimento);
         printf("Última Consulta: %s\n", paciente->ultima_consulta);
+
+        // Obter a data atual
+        char data_atual[11];
+        obter_data_atual(data_atual);
+
+        // Calcular a diferença em dias
+        int dias_desde_ultima_consulta = calcular_diferenca_dias(paciente->ultima_consulta, data_atual);
+
+        if (dias_desde_ultima_consulta >= 0) {
+            printf("Dias desde a última consulta: %d\n", dias_desde_ultima_consulta);
+        } else {
+            printf("Erro ao calcular a diferença de dias.\n");
+        }
     } else {
         printf("Paciente não encontrado.\n");
     }
