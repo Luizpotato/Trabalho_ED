@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 // Estrutura para armazenar os dados de um paciente
 typedef struct {
@@ -30,6 +31,54 @@ typedef struct NoAVL {
     struct NoAVL* direita;
     int altura;
 } NoAVL;
+
+//cabeçalho de funções
+ListaDupla* criar_lista();
+NoAVL* criar_no_avl(Paciente paciente);
+int altura_avl(NoAVL* no);
+int fator_balanceamento(NoAVL* no);
+NoAVL* rotacionar_direita(NoAVL* y);
+NoAVL* rotacionar_esquerda(NoAVL* x);
+NoAVL* inserir_avl(NoAVL* raiz, Paciente paciente);
+void inserir_ordenado(ListaDupla* lista, Paciente paciente);
+Paciente* buscar_lista(ListaDupla* lista, char* nome);
+Paciente* buscar_avl(NoAVL* raiz, char* nome);
+void exibir_paciente(Paciente* paciente);
+void listar_pacientes_lista(ListaDupla* lista);
+void listar_pacientes_avl(NoAVL* raiz);
+void limpar_string(char* str);
+void carregar_pacientes(ListaDupla* lista_m, NoAVL** raiz_l, char* nome_arquivo);
+void cadastrar_paciente(ListaDupla* lista_m, NoAVL** raiz_l);
+void alterar_registro(ListaDupla* lista_m, NoAVL* raiz_l);
+void salvar_pacientes_moises(ListaDupla* lista, const char* nome_arquivo);
+void salvar_pacientes_liz(NoAVL* raiz, FILE* arquivo);
+void salvar_pacientes_liz_arquivo(NoAVL* raiz, const char* nome_arquivo);
+void salvar_pacientes(ListaDupla* lista_m, NoAVL* raiz_l);
+void menu_moises(ListaDupla* lista);
+void menu_liz(NoAVL* raiz);
+void menu_principal(ListaDupla* lista_m, NoAVL* raiz_l);
+void limpar_tela();
+//
+
+// Função principal
+int main(int argc, char* argv[]) {
+    if (argc != 2) {
+        printf("Uso: %s <arquivo.txt>\n", argv[0]);
+        return 1;
+    }
+
+    ListaDupla* lista_m = criar_lista();
+    NoAVL* raiz_l = NULL;
+
+    carregar_pacientes(lista_m, &raiz_l, argv[1]);
+
+    menu_principal(lista_m, raiz_l);
+
+    salvar_pacientes(lista_m, raiz_l);
+    
+    // Liberar memória (a ser implementado)
+    return 0;
+}
 
 // Função para criar uma nova lista vazia
 ListaDupla* criar_lista() {
@@ -269,19 +318,172 @@ void carregar_pacientes(ListaDupla* lista_m, NoAVL** raiz_l, char* nome_arquivo)
     fclose(arquivo);
 }
 
+// Função para criar um paciente 
+void cadastrar_paciente(ListaDupla* lista_m, NoAVL** raiz_l) {
+    Paciente paciente;
+    char sexo;
+
+    printf("Digite o nome do paciente: ");
+    scanf(" %[^\n]", paciente.nome);
+
+    printf("Digite o sexo do paciente (M/F): ");
+    scanf(" %c", &sexo);
+    paciente.sexo = sexo;
+
+    printf("Digite a data de nascimento (dd/mm/aaaa): ");
+    scanf(" %s", paciente.nascimento);
+
+    printf("Digite a data da última consulta (dd/mm/aaaa): ");
+    scanf(" %s", paciente.ultima_consulta);
+
+    if (sexo == 'M') {
+        inserir_ordenado(lista_m, paciente);
+        printf("Paciente cadastrado na lista do Moises.\n");
+    } else if (sexo == 'F') {
+        *raiz_l = inserir_avl(*raiz_l, paciente);
+        printf("Paciente cadastrado na arvore da Liz.\n");
+    } else {
+        printf("Sexo inválido. Use 'M' para masculino ou 'F' para feminino.\n");
+    }
+}
+
+// Função para alterar um registro de paciente
+// Função para alterar um registro de paciente
+void alterar_registro(ListaDupla* lista_m, NoAVL* raiz_l) {
+    char nome[100];
+    int menu;
+
+    printf("Digite o nome do paciente que deseja alterar: ");
+    scanf(" %[^\n]", nome);
+
+    // Busca na lista do Moisés
+    Paciente* paciente = buscar_lista(lista_m, nome);
+    if (paciente != NULL) {
+        printf("Paciente encontrado na lista do Moises.\n");
+    } else {
+        // Busca na árvore da Liz
+        paciente = buscar_avl(raiz_l, nome);
+        if (paciente != NULL) {
+            printf("Paciente encontrado na arvore da Liz.\n");
+        } else {
+            printf("Paciente não encontrado.\n");
+            return;
+        }
+    }
+
+    do {
+        printf("\nO que deseja alterar?\n");
+        printf("1. Nome\n");
+        printf("2. Sexo\n");
+        printf("3. Data de Nascimento\n");
+        printf("4. Data da Última Consulta\n");
+        printf("5. Voltar\n");
+        printf("Sua escolha: ");
+        scanf("%d", &menu);
+        setbuf(stdin, NULL);
+        switch(menu) {
+            case 1:
+                printf("Digite o novo nome: ");
+                char novo_nome[100];
+                scanf(" %[^\n]", novo_nome);
+                strcpy(paciente->nome, novo_nome);
+                printf("Registro do paciente alterado com sucesso.\n");
+                break;
+            case 2:
+                printf("Digite o novo sexo (M/F): ");
+                char novo_sexo;
+                scanf(" %c", &novo_sexo);
+                if (novo_sexo == 'M' || novo_sexo == 'F') {
+                    paciente->sexo = novo_sexo;
+                    printf("Registro do paciente alterado com sucesso.\n");
+                } else {
+                    printf("Sexo inválido. Use 'M' para masculino ou 'F' para feminino.\n");
+                }
+                break;
+            case 3:
+                printf("Digite a nova data de nascimento (dd/mm/aaaa): ");
+                char nova_nascimento[11];
+                scanf(" %s", nova_nascimento);
+                strcpy(paciente->nascimento, nova_nascimento);
+                printf("Registro do paciente alterado com sucesso.\n");
+                break;
+            case 4:
+                printf("Digite a nova data da última consulta (dd/mm/aaaa): ");
+                char nova_consulta[11];
+                scanf(" %s", nova_consulta);
+                strcpy(paciente->ultima_consulta, nova_consulta);
+                printf("Registro do paciente alterado com sucesso.\n");
+                break;
+            case 5:
+                printf("Voltando ao menu principal.\n");
+                break;
+            default:
+                printf("Opção inválida.\n");
+        }
+    } while (menu != 5);
+}
+
+// Função para salvar os pacientes da lista do Moisés em um arquivo
+void salvar_pacientes_moises(ListaDupla* lista, const char* nome_arquivo) {
+    FILE* arquivo = fopen(nome_arquivo, "w");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo para salvar os pacientes do Moisés.\n");
+        return;
+    }
+
+    NoLista* atual = lista->inicio;
+    while (atual != NULL) {
+        fprintf(arquivo, "%s, %c, %s, %s\n", atual->paciente.nome, atual->paciente.sexo, atual->paciente.nascimento, atual->paciente.ultima_consulta);
+        atual = atual->proximo;
+    }
+
+    fclose(arquivo);
+    printf("Pacientes do Moisés salvos em %s.\n", nome_arquivo);
+}
+
+// Função para salvar os pacientes da árvore da Liz em um arquivo
+void salvar_pacientes_liz(NoAVL* raiz, FILE* arquivo) {
+    if (raiz == NULL) return;
+
+    salvar_pacientes_liz(raiz->esquerda, arquivo);
+    fprintf(arquivo, "%s, %c, %s, %s\n", raiz->paciente.nome, raiz->paciente.sexo, raiz->paciente.nascimento, raiz->paciente.ultima_consulta);
+    salvar_pacientes_liz(raiz->direita, arquivo);
+}
+
+// Função para salvar os pacientes da árvore da Liz em um arquivo
+void salvar_pacientes_liz_arquivo(NoAVL* raiz, const char* nome_arquivo) {
+    FILE* arquivo = fopen(nome_arquivo, "w");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo para salvar os pacientes da Liz.\n");
+        return;
+    }
+
+    salvar_pacientes_liz(raiz, arquivo);
+    fclose(arquivo);
+    printf("Pacientes da Liz salvos em %s.\n", nome_arquivo);
+}
+
+// Função para salvar todos os pacientes ao fechar o programa
+void salvar_pacientes(ListaDupla* lista_m, NoAVL* raiz_l) {
+    salvar_pacientes_moises(lista_m, "pacientes_moises.txt");
+    salvar_pacientes_liz_arquivo(raiz_l, "pacientes_liz.txt");
+}
+
 // Função para exibir o menu de pacientes do Moisés
 void menu_moises(ListaDupla* lista) {
     int opcao;
     char nome[100];
 
+    setbuf(stdin, NULL);
+
     do {
-        printf("\n--- Pacientes do Moisés ---\n");
+        printf("\n--- Pacientes do Moises ---\n");
         printf("1. Consultar paciente\n");
         printf("2. Listar todos os pacientes\n");
         printf("3. Cadastrar paciente\n");
         printf("4. Alterar cadastro do paciente\n");
         printf("5. Voltar\n");
-        printf("Escolha uma opção: ");
+        printf("Sua escolha: ");
         scanf("%d", &opcao);
 
         switch (opcao) {
@@ -295,13 +497,14 @@ void menu_moises(ListaDupla* lista) {
                 listar_pacientes_lista(lista);
                 break;
             case 3:
-                printf("nao implementado");
+                cadastrar_paciente(lista, NULL);
                 break;
             case 4:
-                printf("Alterar cadastro (não implementado).\n");
+                alterar_registro(lista, NULL);
                 break;
             case 5:
                 printf("Voltando ao menu principal.\n");
+                limpar_tela();
                 break;
             default:
                 printf("Opção inválida.\n");
@@ -314,6 +517,8 @@ void menu_liz(NoAVL* raiz) {
     int opcao;
     char nome[100];
 
+    setbuf(stdin, NULL);
+
     do {
         printf("\n--- Pacientes da Liz ---\n");
         printf("1. Consultar paciente\n");
@@ -321,7 +526,7 @@ void menu_liz(NoAVL* raiz) {
         printf("3. Cadastrar paciente\n");
         printf("4. Alterar cadastro do paciente\n");
         printf("5. Voltar\n");
-        printf("Escolha uma opção: ");
+        printf("Sua escolha: ");
         scanf("%d", &opcao);
 
         switch (opcao) {
@@ -334,15 +539,17 @@ void menu_liz(NoAVL* raiz) {
             case 2:
                 printf("\n--- Lista de Pacientes (Liz) ---\n");
                 listar_pacientes_avl(raiz);
+                getchar();
                 break;
             case 3:
-                printf("cadastrar paciente(não implementado).\n");
+                cadastrar_paciente(NULL, &raiz);
                 break;
             case 4:
-                printf("Alterar cadastro (não implementado).\n");
+                alterar_registro(NULL, raiz);
                 break;
             case 5:
                 printf("Voltando ao menu principal.\n");
+                limpar_tela();
                 break;
             default:
                 printf("Opção inválida.\n");
@@ -354,19 +561,23 @@ void menu_liz(NoAVL* raiz) {
 void menu_principal(ListaDupla* lista_m, NoAVL* raiz_l) {
     int opcao;
 
+    setbuf(stdin, NULL);
+
     do {
         printf("\n--- Menu Principal ---\n");
-        printf("1. Pacientes do Moisés\n");
+        printf("1. Pacientes do Moises\n");
         printf("2. Pacientes da Liz\n");
         printf("3. Finalizar programa\n");
-        printf("Escolha uma opção: ");
+        printf("Sua escolha: ");
         scanf("%d", &opcao);
 
         switch (opcao) {
             case 1:
+                limpar_tela();
                 menu_moises(lista_m);
                 break;
             case 2:
+                limpar_tela();
                 menu_liz(raiz_l);
                 break;
             case 3:
@@ -374,24 +585,16 @@ void menu_principal(ListaDupla* lista_m, NoAVL* raiz_l) {
                 break;
             default:
                 printf("Opção inválida.\n");
+                limpar_tela();
         }
     } while (opcao != 3);
 }
 
-// Função principal
-int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        printf("Uso: %s <arquivo.txt>\n", argv[0]);
-        return 1;
-    }
-
-    ListaDupla* lista_m = criar_lista();
-    NoAVL* raiz_l = NULL;
-
-    carregar_pacientes(lista_m, &raiz_l, argv[1]);
-
-    menu_principal(lista_m, raiz_l);
-
-    // Liberar memória (a ser implementado)
-    return 0;
+//função para limpar a tela, dependendo do sistema operacional
+void limpar_tela(){
+    #ifdef _WIN32
+        system("cls"); 
+    #else
+        system("clear"); 
+    #endif
 }
