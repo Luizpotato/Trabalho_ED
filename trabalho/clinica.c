@@ -607,18 +607,26 @@ void menu_moises(ListaDupla* lista) {
 
         switch (opcao) {
             case 1:
+                limpar_tela();
                 printf("Digite o nome do paciente: ");
                 scanf(" %[^\n]", nome);
                 Paciente* paciente = buscar_lista(lista, nome);
+                setbuf(stdin, NULL);
                 exibir_paciente(paciente);
                 break;
             case 2:
+                limpar_tela();
+                setbuf(stdin, NULL);
                 listar_pacientes_lista(lista);
                 break;
             case 3:
+                limpar_tela();
+                setbuf(stdin, NULL);
                 cadastrar_paciente(lista, NULL);
                 break;
             case 4:
+                limpar_tela();
+                setbuf(stdin, NULL);
                 alterar_registro(lista, NULL);
                 break;
             case 5:
@@ -647,26 +655,35 @@ void menu_liz(NoAVL* raiz) {
         printf("5. Voltar\n");
         printf("Sua escolha: ");
         scanf("%d", &opcao);
+       
 
         switch (opcao) {
             case 1:
+                limpar_tela();
                 printf("Digite o nome do paciente: ");
                 scanf(" %[^\n]", nome);
                 Paciente* paciente = buscar_avl(raiz, nome);
+                setbuf(stdin, NULL);
                 exibir_paciente(paciente);
                 break;
             case 2:
+                limpar_tela();
+                setbuf(stdin, NULL);
                 printf("\n--- Lista de Pacientes (Liz) ---\n");
                 listar_pacientes_avl(raiz);
-                getchar();
                 break;
             case 3:
+                limpar_tela();
+                setbuf(stdin, NULL);
                 cadastrar_paciente(NULL, &raiz);
                 break;
             case 4:
+                limpar_tela();
+                setbuf(stdin, NULL);
                 alterar_registro(NULL, raiz);
                 break;
             case 5:
+                setbuf(stdin, NULL);
                 printf("Voltando ao menu principal.\n");
                 limpar_tela();
                 break;
@@ -693,10 +710,12 @@ void menu_principal(ListaDupla* lista_m, NoAVL* raiz_l) {
         switch (opcao) {
             case 1:
                 limpar_tela();
+                setbuf(stdin, NULL);
                 menu_moises(lista_m);
                 break;
             case 2:
                 limpar_tela();
+                setbuf(stdin, NULL);
                 menu_liz(raiz_l);
                 break;
             case 3:
@@ -740,4 +759,3 @@ void destruir_avl(NoAVL* raiz) {
     // Libera o nó atual
     free(raiz);
 }
-
