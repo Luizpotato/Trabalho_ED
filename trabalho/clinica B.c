@@ -364,7 +364,7 @@ void carregar_pacientes(ListaDupla* lista_m, NoAVL** raiz_l, char* nome_arquivo)
     FILE* arquivo = fopen(nome_arquivo, "r");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo.\n");
-        return;
+        exit(1); //nao abre o programa sem o arquivo correto
     }
 
     char linha[256];
