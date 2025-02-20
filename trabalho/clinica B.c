@@ -58,7 +58,7 @@ void salvar_pacientes(ListaDupla* lista_m, NoAVL* raiz_l);
 void salvar_pacientes_original(ListaDupla* lista_m, NoAVL* raiz_l, char* nome_arquivo);
 void salvar_avl_em_arquivo(NoAVL* raiz, FILE* arquivo);
 void menu_moises(ListaDupla* lista);
-void menu_liz(NoAVL* raiz);
+void menu_liz(ListaDupla* lista_m, NoAVL* raiz);
 void menu_principal(ListaDupla* lista_m, NoAVL* raiz_l);
 void limpar_tela();
 void destruir_avl(NoAVL* raiz);
@@ -640,7 +640,7 @@ void menu_moises(ListaDupla* lista) {
 }
 
 // Função para exibir o menu de pacientes da Liz
-void menu_liz(NoAVL* raiz) {
+void menu_liz(ListaDupla* lista_m, NoAVL* raiz) {
     int opcao;
     char nome[100];
 
@@ -680,7 +680,7 @@ void menu_liz(NoAVL* raiz) {
             case 4:
                 limpar_tela();
                 setbuf(stdin, NULL);
-                alterar_registro(NULL, raiz);
+                alterar_registro(lista_m, raiz);
                 break;
             case 5:
                 setbuf(stdin, NULL);
@@ -716,7 +716,7 @@ void menu_principal(ListaDupla* lista_m, NoAVL* raiz_l) {
             case 2:
                 limpar_tela();
                 setbuf(stdin, NULL);
-                menu_liz(raiz_l);
+                menu_liz(lista_m, raiz_l);
                 break;
             case 3:
                 printf("Finalizando programa.\n");
